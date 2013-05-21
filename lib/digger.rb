@@ -13,8 +13,14 @@ class Digger
   def follow_redirects
     idomain = domain
     response = nil
-    while
-      #puts "#{idomain}"
+    visited = []
+
+    while true do
+      if visited.include?(idomain)
+        return nil, nil
+      end
+      visited << idomain
+
       uri = URI.parse(idomain)
       response = Net::HTTP.get_response(uri)
       if ["301", "302"].include?(response.code)
@@ -29,7 +35,7 @@ class Digger
   def ok?
     idomain, response = follow_redirects
 
-    if response.code != "200"
+    if response == nil or response.code != "200"
       return false
     end
 
