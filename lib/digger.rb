@@ -17,6 +17,8 @@ class Digger
 
     while true do
       if visited.include?(idomain)
+        # did we ever visit a shopify domain?
+        
         return nil, nil
       end
       visited << idomain
@@ -33,13 +35,16 @@ class Digger
   end
 
   def ok?
-    idomain, response = follow_redirects
+    domain, response = follow_redirects
 
     if response == nil or response.code != "200"
       return false
     end
+    dns_ok?(domain)
+  end
 
-    res = self.class.dig(idomain)
+  def dns_ok?(domain)
+    res = self.class.dig(domain)
     SHOPIFY_IPS.include?(res.answer.last.address.to_s)
   end
 
